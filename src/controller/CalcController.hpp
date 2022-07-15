@@ -84,9 +84,8 @@ public:
         info->summary = "Resolves an expression";
         info->addResponse<Float64>(Status::CODE_200, "text/plain");
         info->queryParams.add<String>("expression").description = "The math function to parse and resolve, e.g. 3+4";
-        info->queryParams["expression"].required = true;
         info->queryParams.add<String>("x").description = "Variable x";
-        info->queryParams["expression"].required = false;
+        info->queryParams["x"].required = false;
     }
 
     ENDPOINT("GET", "/v1/calc", calc, REQUEST(std::shared_ptr<IncomingRequest>, request)) {
