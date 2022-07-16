@@ -5,6 +5,12 @@ docker build --tag mathparser .
 docker run --rm -p 8000:8000 mathparser
 ```
 
+Then use it vial `curl "http://localhost:8000/v1/calc?expression=3+4"`.
+
+# Official hosting
+
+The system is deployed at https://math.oglimmer.de
+
 # Build
 
 ## Prerequisites
@@ -27,14 +33,24 @@ git clone https://github.com/oglimmer/oatpp-swagger.git --depth=1
 cd oatpp-swagger/
 mkdir build
 cd build
+cmake ..
 make install
 ```
 
-For the UI you also need to have node, npm installed.
+We also need the mathparser lib
 
-## Math Parser
+```
+git clone https://github.com/oglimmer/math_parser.git --depth=1
+cd math_parser
+mkdir build
+cd build
+cmake ..
+make install
+```
 
-This is how you build mathparser itself:
+## Math Parser REST API
+
+This is how you build REST API itself:
 
 ```bash
 mkdir build && cd build
@@ -42,3 +58,14 @@ cmake ..
 make
 ```
 
+Now you can start it via:
+
+```
+build/mathparser-exe
+```
+
+And you can use the local webserver:
+
+```
+curl "http://localhost:8000/v1/calc?expression=3+4"
+```
