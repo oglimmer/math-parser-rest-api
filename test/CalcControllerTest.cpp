@@ -29,9 +29,9 @@ void CalcControllerTest::onRun() {
         {
             auto calcResponse = client->calcWithParam("3+1");
             OATPP_ASSERT(calcResponse->getStatusCode() == 200);
-            auto result = calcResponse->readBodyToString();
+            auto result = calcResponse->readBodyToDto<oatpp::Object<CalcResponse >>(objectMapper.get());
             OATPP_ASSERT(result);
-            OATPP_ASSERT(std::atof(result->c_str()) == 4);
+            OATPP_ASSERT(result->result.getValue(-1) == 4);
         }
 
         {
@@ -39,7 +39,7 @@ void CalcControllerTest::onRun() {
             OATPP_ASSERT(calcResponse->getStatusCode() == 400);
             auto result = calcResponse->readBodyToString();
             OATPP_ASSERT(result);
-            OATPP_ASSERT(result == "You have to specify the query parameter expression, e.g. expression=3+4");
+            OATPP_ASSERT(result == "You have to specify the query parameter expression, e.g. https://math.oglimmer.de/v1/calc?expression=sqrt(2^3+1)");
         }
 
         {
@@ -47,15 +47,15 @@ void CalcControllerTest::onRun() {
             OATPP_ASSERT(calcResponse->getStatusCode() == 400);
             auto result = calcResponse->readBodyToString();
             OATPP_ASSERT(result);
-            OATPP_ASSERT(result == "You have to specify the query parameter expression, e.g. expression=3+4");
+            OATPP_ASSERT(result == "You have to specify the query parameter expression, e.g. https://math.oglimmer.de/v1/calc?expression=sqrt(2^3+1)");
         }
 
         {
             auto calcResponse = client->calcWithXVariable("3+1+x", "4");
             OATPP_ASSERT(calcResponse->getStatusCode() == 200);
-            auto result = calcResponse->readBodyToString();
+            auto result = calcResponse->readBodyToDto<oatpp::Object<CalcResponse >>(objectMapper.get());
             OATPP_ASSERT(result);
-            OATPP_ASSERT(std::atof(result->c_str()) == 8);
+            OATPP_ASSERT(result->result.getValue(-1) == 8);
         }
 
     }, std::chrono::minutes(10) /* test timeout */);

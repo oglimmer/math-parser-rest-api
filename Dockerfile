@@ -19,8 +19,8 @@ RUN cd /home &&  \
     make install
 
 RUN cd /home && \
-    git clone https://github.com/oglimmer/math_parser.git --depth=1 && \
-    cd math_parser && \
+    git clone https://github.com/oglimmer/math_parser_cpp.git --depth=1 && \
+    cd math_parser_cpp && \
     mkdir build && \
     cd build && \
     cmake .. && \
