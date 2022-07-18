@@ -20,6 +20,28 @@ else()
     message(FATAL_ERROR "Could not find oatpp-swagger")
 endif()
 
+# Get the current working branch
+execute_process(
+        COMMAND git rev-parse --abbrev-ref HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_BRANCH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Get the latest commit hash
+execute_process(
+        COMMAND git rev-parse HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Get the latest commit date
+execute_process(
+        COMMAND git log -1 --format=%cd
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_DATE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
 include_directories(${oatpp_INCLUDE_DIRS})
 include_directories(${oatpp-swagger_INCLUDE_DIRS})
 include_directories("/usr/local/include/mathparser/") # or this CXXFLAGS -I/usr/local/include/
@@ -65,6 +87,10 @@ add_executable(${project_name}-exe
         src/App.cpp)
 target_link_libraries(${project_name}-exe ${project_name}-lib)
 add_dependencies(${project_name}-exe ${project_name}-lib)
+
+target_compile_definitions(${project_name}-exe PRIVATE "-DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"")
+target_compile_definitions(${project_name}-exe PRIVATE "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+target_compile_definitions(${project_name}-exe PRIVATE "-DGIT_COMMIT_DATE=\"${GIT_COMMIT_DATE}\"")
 
 add_executable(${project_name}-test
         test/tests.cpp

@@ -9,6 +9,16 @@
 
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
 
+#ifndef GIT_COMMIT_HASH
+#define GIT_COMMIT_HASH "?"
+#endif
+#ifndef GIT_BRANCH
+#define GIT_BRANCH "?"
+#endif
+#ifndef GIT_COMMIT_DATE
+#define GIT_COMMIT_DATE "?"
+#endif
+
 class RootController : public oatpp::web::server::api::ApiController {
 public:
     /**
@@ -25,8 +35,18 @@ public:
         return resp;
     }
 
-    ENDPOINT("GET", "/health", info) {
+    ENDPOINT("GET", "/health", health) {
         return createResponse(Status::CODE_200);
+    }
+
+    ENDPOINT("GET", "/info", info) {
+        std::string responseText("Built from ");
+        responseText += GIT_BRANCH;
+        responseText += " committed on ";
+        responseText += GIT_COMMIT_DATE;
+        responseText += " with #";
+        responseText += GIT_COMMIT_HASH;
+        return createResponse(Status::CODE_200, responseText);
     }
 
 };
