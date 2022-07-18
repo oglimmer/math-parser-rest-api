@@ -7,10 +7,10 @@
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/protocol/http/incoming/Request.hpp"
 
-#include "mathparser/InvalidFormulaException.hpp"
-#include "mathparser/FunctionParser.hpp"
-#include "mathparser/ast/Expression.hpp"
-#include "mathparser/tokenize/Token.hpp"
+#include "InvalidFormulaException.hpp"
+#include "FunctionParser.hpp"
+#include "ast/Expression.hpp"
+#include "tokenize/Token.hpp"
 
 std::string urlDecode(const std::string &src) {
     std::string ret;
@@ -63,6 +63,7 @@ public:
 };
 
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
+#include "dto/DtoExpressionConversion.hpp"
 
 
 class CalcController : public oatpp::web::server::api::ApiController {
@@ -74,6 +75,7 @@ public:
     explicit CalcController(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
             : oatpp::web::server::api::ApiController(objectMapper) {
         setErrorHandler(CustomErrorHandler::createShared());
+        ASTBuilder::initImpl(std::make_shared<ASTBuilderWeb>());
     }
 
 public:
@@ -135,6 +137,36 @@ public:
         }
     }
 
+    ENDPOINT_INFO(ast) {
+        info->summary = "Returns the AST for an expression";
+        info->addResponse < Object < TokenizeResponse >> (Status::CODE_200, "application/json");
+        info->queryParams.add<String>("expression").description = "The math function to parse, e.g. 3+4";
+        info->queryParams.add<String>("x").description = "Variable x";
+        info->queryParams["x"].required = false;
+    }
+
+    ENDPOINT("GET", "/v1/ast", ast, REQUEST(std::shared_ptr<IncomingRequest>, request)) {
+        try {
+            oatpp::network::Url::Parameters queryParams = oatpp::network::Url::Parser::parseQueryParams(
+                    request->getPathTail());
+            auto expression = getInputExpression(queryParams);
+            std::map<std::string, long double> vars = prepareVars(queryParams);
+            FunctionParser fp;
+            std::unique_ptr<std::vector<std::shared_ptr<Token>>> tokens = fp.tokenize(expression);
+
+            std::shared_ptr<Expression> exp = ASTBuilder::getSelf()->tokensToExpression(*tokens);
+
+            std::shared_ptr<DtoConvertable> dtoConvertable = std::dynamic_pointer_cast<DtoConvertable>(exp);
+            auto response = ASTResponse::createShared();
+            response->rootExpression = {};
+            dtoConvertable->convert(response->rootExpression);
+
+            return createDtoResponse(Status::CODE_200, response);
+        } catch (const InvalidFormulaException &e) {
+            return createResponse(Status::CODE_400, e.what());
+        }
+    }
+
     ADD_CORS(calc)
 
     ENDPOINT_INFO(calc) {
@@ -169,6 +201,12 @@ public:
                 token->type = tokenElement->getType();
                 calcResponse->tokens->push_back(token);
             }
+
+            std::shared_ptr<DtoConvertable> dtoConvertable = std::dynamic_pointer_cast<DtoConvertable>(exp);
+            calcResponse->ast = ASTResponse::createShared();
+            calcResponse->ast->rootExpression = {};
+            dtoConvertable->convert(calcResponse->ast->rootExpression);
+
             calcResponse->parsedExpression = exp->toString();
             auto endTime = std::chrono::system_clock::now();
             auto durationInMicros = std::chrono::duration_cast<std::chrono::microseconds>((endTime - startTime));

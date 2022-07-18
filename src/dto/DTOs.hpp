@@ -16,20 +16,6 @@ class TokenElement : public oatpp::DTO {
 
 };
 
-class CalcResponse : public oatpp::DTO {
-
-    DTO_INIT(CalcResponse, DTO)
-
-    DTO_FIELD(Float64, result);
-
-    DTO_FIELD(String, parsedExpression);
-
-    DTO_FIELD(List < Object < TokenElement >>, tokens);
-
-    DTO_FIELD(Int32, processingTimeInMicros);
-
-};
-
 class TokenizeResponse : public oatpp::DTO {
 
     DTO_INIT(TokenizeResponse, DTO)
@@ -38,5 +24,29 @@ class TokenizeResponse : public oatpp::DTO {
 
 };
 
+class ASTResponse : public oatpp::DTO {
+
+    DTO_INIT(ASTResponse, DTO)
+
+    DTO_FIELD(Fields < Any >, rootExpression);
+
+//    DTO_FIELD(Any, rootExpression);//this is not supported by oatpp
+};
+
+class CalcResponse : public oatpp::DTO {
+
+    DTO_INIT(CalcResponse, DTO)
+
+    DTO_FIELD(Float64, result);
+
+    DTO_FIELD(String, parsedExpression);
+
+    DTO_FIELD(Object<ASTResponse>, ast);
+
+    DTO_FIELD(List < Object < TokenElement >>, tokens);
+
+    DTO_FIELD(Int32, processingTimeInMicros);
+
+};
 
 #include OATPP_CODEGEN_END(DTO)

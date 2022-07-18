@@ -22,7 +22,7 @@ endif()
 
 include_directories(${oatpp_INCLUDE_DIRS})
 include_directories(${oatpp-swagger_INCLUDE_DIRS})
-include_directories("/usr/local/include/") # or this CXXFLAGS -I/usr/local/include/
+include_directories("/usr/local/include/mathparser/") # or this CXXFLAGS -I/usr/local/include/
 
 find_library(MATHPARSER_LIB math_parser-lib REQUIRED)
 
@@ -42,6 +42,7 @@ add_definitions(
 add_library(${project_name}-lib
         src/controller/RootController.cpp
         src/controller/CalcController.cpp
+        src/dto/DtoExpressionConversion.cpp
         )
 
 ## link libs
