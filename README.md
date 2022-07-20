@@ -5,7 +5,7 @@ docker build --tag mathparser .
 docker run --rm -p 8000:8000 mathparser
 ```
 
-Then use it vial `curl "http://localhost:8000/v1/calc?expression=3+4"`.
+Then use it via `curl "http://localhost:8000/v1/calc?expression=3+4"`.
 
 # Official hosting
 

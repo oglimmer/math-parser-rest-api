@@ -87,7 +87,7 @@ void BinaryOpConvertable::convert(oatpp::Fields<oatpp::Any> &fields) const {
 std::shared_ptr<ASTNode> ASTBuilderWeb::toASTNode(TokenType tokenType, std::string data) const {
     switch (tokenType) {
         case TokenType::NUMBER:
-            return std::shared_ptr<ASTNode>(new NumberConvertable(std::atoll(data.c_str())));
+            return std::shared_ptr<ASTNode>(new NumberConvertable(std::stold(data.c_str())));
         case TokenType::OPERATOR:
             return std::shared_ptr<ASTNode>(new Operation(data[0]));
         case TokenType::PARENTHESIS_OPEN:

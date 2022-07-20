@@ -9,6 +9,8 @@
 
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
+#include <cmath>
+
 void CalcControllerTest::onRun() {
 
     TestComponent component;
@@ -32,6 +34,15 @@ void CalcControllerTest::onRun() {
             auto result = calcResponse->readBodyToDto<oatpp::Object<CalcResponse >>(objectMapper.get());
             OATPP_ASSERT(result);
             OATPP_ASSERT(result->result.getValue(-1) == 4);
+        }
+
+        {
+            auto calcResponse = client->calcWithParam("sqrt(((3.3+4.1)*12.66)^sin(3.2))");
+            OATPP_ASSERT(calcResponse->getStatusCode() == 200);
+            auto result = calcResponse->readBodyToDto<oatpp::Object<CalcResponse >>(objectMapper.get());
+            OATPP_ASSERT(result);
+            v_float64 d = result->result.getValue(-1);
+            OATPP_ASSERT(round(d * 10000) == round(0.87589 * 10000));
         }
 
         {
