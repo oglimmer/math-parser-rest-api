@@ -1,0 +1,6 @@
+[requires]
+oatpp/1.3.0
+oatpp-swagger/1.3.0
+
+[generators]
+cmake

@@ -30,13 +30,13 @@ public:
     }
 
     ENDPOINT("GET", "/", root) {
-        auto resp = createResponse(Status::CODE_301);
+        auto resp = createResponse(Status::CODE_301, "");
         resp->putHeader("Location", "/swagger/ui");
         return resp;
     }
 
     ENDPOINT("GET", "/health", health) {
-        return createResponse(Status::CODE_200);
+        return createResponse(Status::CODE_200, "");
     }
 
     ENDPOINT("GET", "/info", info) {

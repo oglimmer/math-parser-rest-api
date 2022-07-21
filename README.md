@@ -1,5 +1,7 @@
 # Run via Docker
 
+Tested on ARMv8 only.
+
 ```
 docker build --tag mathparser .
 docker run --rm -p 8000:8000 mathparser
@@ -15,37 +17,18 @@ The system is deployed at https://math.oglimmer.de
 
 ## Prerequisites
 
-You need to have oat++ and oat-swagger installed, see https://oatpp.io/docs/installation/unix-linux/ 
+You need to have a c++11 compiler, cmake and conan installed. 
 
-For Unix/macOS do this:
-
-```
-# oatpp
-git clone https://github.com/oatpp/oatpp.git --depth=1
-cd oatpp/
-mkdir build
-cd build
-cmake ..
-make install
-
-# oatpp-swagger
-git clone https://github.com/oglimmer/oatpp-swagger.git --depth=1
-cd oatpp-swagger/
-mkdir build
-cd build
-cmake ..
-make install
-```
-
-We also need the mathparser lib
+As this REST API uses my c++ math parser lib, you also need install this mathparser lib
 
 ```
-git clone https://github.com/oglimmer/math_parser.git --depth=1
+git clone https://github.com/oglimmer/math_parser_cpp.git --depth=1
 cd math_parser
 mkdir build
 cd build
+conan install ..
 cmake ..
-make install
+cmake --build .
 ```
 
 ## Math Parser REST API
@@ -54,14 +37,16 @@ This is how you build REST API itself:
 
 ```bash
 mkdir build && cd build
+conan install .. --build=missing
 cmake ..
-make
+cmake --build .
+ctest
 ```
 
 Now you can start it via:
 
 ```
-build/mathparser-exe
+build/bin/mathparser-exe
 ```
 
 And you can use the local webserver:

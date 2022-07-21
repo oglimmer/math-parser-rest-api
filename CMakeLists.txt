@@ -8,21 +8,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 ## EXT LIBS
 
-find_package(oatpp 1.3.0 REQUIRED)
-if(oatpp_FOUND)
-    message(STATUS "Found oatpp version: ${oatpp_VERSION_STRING}")
-else()
-    message(FATAL_ERROR "Could not find oatpp")
-endif()
-
-find_package(oatpp-swagger  1.3.0 REQUIRED)
-if(oatpp-swagger_FOUND)
-    message(STATUS "Found oatpp-swagger version: ${oatpp-swagger_VERSION_STRING}")
-else()
-    message(FATAL_ERROR "Could not find oatpp-swagger")
-endif()
-
 find_library(MATHPARSER_LIB math_parser-lib REQUIRED)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
 
 # Get the current working branch
 execute_process(
@@ -66,8 +55,8 @@ add_library(${project_name}-lib
         lib/dto/DtoExpressionConversion.cpp
         )
 target_link_libraries(${project_name}-lib
-        PUBLIC oatpp::oatpp
-        PUBLIC oatpp::oatpp-swagger
+        PUBLIC CONAN_PKG::oatpp
+        PUBLIC CONAN_PKG::oatpp-swagger
         PUBLIC "${MATHPARSER_LIB}"
         )
 include_directories("/usr/local/include/mathparser/") # or this CXXFLAGS -I/usr/local/include/
@@ -96,7 +85,7 @@ target_link_libraries(${project_name}-test ${project_name}-lib)
 add_dependencies(${project_name}-test ${project_name}-lib)
 
 enable_testing()
-add_test(project-tests ${project_name}-test)
+add_test(project-tests bin/${project_name}-test)
 
 ## GENERAL
 
