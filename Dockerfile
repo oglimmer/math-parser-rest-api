@@ -1,7 +1,8 @@
 FROM debian:11-slim
 
 RUN apt update && \
-    apt install -y cmake g++ git doctest-dev
+    apt install -y cmake g++ git python3-pip && \
+    pip3 install conan
 
 RUN cd /home &&  \
     git clone https://github.com/oatpp/oatpp.git --depth=1 &&  \
@@ -23,8 +24,11 @@ RUN cd /home && \
     cd math_parser_cpp && \
     mkdir build && \
     cd build && \
-    cmake .. && \
-    make install
+    conan install .. && \
+    cmake .. &&  \
+    cmake --build . &&  \
+    ctest && \
+    cmake --install .
 
 COPY . /home/mathparser
 

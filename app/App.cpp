@@ -1,5 +1,5 @@
-#include "./controller/RootController.hpp"
-#include "./AppComponent.hpp"
+#include "controller/RootController.hpp"
+#include "AppComponent.hpp"
 
 #include "oatpp/network/Server.hpp"
 #include "controller/CalcController.hpp"
