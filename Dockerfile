@@ -1,19 +1,15 @@
 FROM debian:11-slim
 
 RUN apt update && \
-    apt install -y cmake clang git python3-pip && \
-    pip3 install conan && \
-    update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
-    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100
-
-COPY conan-profile.armv8 /tmp/
+    apt install -y cmake git python3-pip && \
+    pip3 install conan
 
 RUN cd /home && \
     git clone https://github.com/oglimmer/math_parser_cpp.git --depth=1 && \
     cd math_parser_cpp && \
     mkdir build && \
     cd build && \
-    conan install .. --profile /tmp/conan-profile.armv8 && \
+    conan install .. && \
     cmake .. &&  \
     cmake --build . &&  \
     ctest && \
@@ -26,7 +22,7 @@ RUN cd /home/mathparser &&  \
     cd build &&  \
     rm -rf * && \
     conan install .. --build=oatpp --build=oatpp-swagger --profile ../conan-profile.armv8 && \
-    cp -r $(cat ./conanbuildinfo.txt | grep OATPP_SWAGGER_RES_PATH | awk '{print substr($0, 24)}') /usr/local/oatpp-swagger-res && \
+    cp -r $(awk -F "=" '/OATPP_SWAGGER_RES_PATH/ {print $2}' ./conanbuildinfo.txt) /usr/local/oatpp-swagger-res && \
     cmake .. && \
     cmake --build .
 
