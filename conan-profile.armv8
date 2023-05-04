@@ -1,4 +1,5 @@
 [settings]
+    build_type=Release
     arch=armv8
     compiler=gcc
     compiler.libcxx=libstdc++11
