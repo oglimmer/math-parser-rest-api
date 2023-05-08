@@ -2,7 +2,7 @@ FROM debian:11-slim
 
 RUN apt update && \
     apt install -y cmake git python3-pip && \
-    pip3 install conan
+    pip3 install conan==1.59
 
 RUN cd /home && \
     git clone https://github.com/oglimmer/math_parser_cpp.git --depth=1 && \
